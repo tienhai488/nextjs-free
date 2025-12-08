@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/theme-provider'
 import './globals.css'
 import Header from '@/components/header'
+import { Toaster } from 'sonner'
 
 const inter = Inter({ subsets: ['vietnamese'] })
 
@@ -24,6 +25,7 @@ export default function RootLayout({
           <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
             <Header />
             {children}
+            <Toaster />
           </ThemeProvider>
         </body>
       </html>
