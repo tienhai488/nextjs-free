@@ -2,13 +2,14 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { LoginBody, LoginBodyType } from '@/src/schemaValidations/auth.schema'
+import { LoginBody, LoginBodyType } from '@/schemaValidations/auth.schema'
 import envConfig from '@/config'
 import { toast } from 'sonner'
+import { useAppContext } from '@/app/AppProvider'
+import { useRouter } from 'next/navigation'
 
 const formSchema = LoginBody
 
@@ -22,6 +23,8 @@ export default function LoginForm() {
       password: ''
     }
   })
+  const { setSessionToken } = useAppContext()
+  const router = useRouter()
 
   async function onSubmit(values: FormValues) {
     try {
@@ -45,8 +48,27 @@ export default function LoginForm() {
       }
 
       toast.success(res.message)
+
+      const resultFromNextServer = await fetch('/api/auth', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+
+      const resFromNextServer = await resultFromNextServer.json()
+
+      setSessionToken(resFromNextServer.data?.token)
+
+      // redirect to profile page
+      router.replace('/me')
+
+      // setSessionToken(resultFromNextServer.data?.token)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
+      console.log(error)
+
       const errors = error.payload?.errors as {
         field: string
         message: string

@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { RegisterBody, RegisterBodyType } from '@/src/schemaValidations/auth.schema'
+import { RegisterBody, RegisterBodyType } from '@/schemaValidations/auth.schema'
 import envConfig from '@/config'
 
 const formSchema = RegisterBody
