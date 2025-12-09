@@ -4,11 +4,11 @@ import type { NextRequest } from 'next/server'
 const privateRoutes = ['/me']
 const publicRoutes = ['/login', '/register']
 
-const isPrivateRoute = (pathname: string) => {
+const isPrivateRoute = (pathname: string): boolean => {
     return privateRoutes.some((route) => pathname.startsWith(route))
 }
 
-const isPublicRoute = (pathname: string) => {
+const isPublicRoute = (pathname: string): boolean => {
     return publicRoutes.some((route) => pathname.startsWith(route))
 }
 

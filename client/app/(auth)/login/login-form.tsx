@@ -6,10 +6,9 @@ import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { LoginBody, LoginBodyType } from '@/schemaValidations/auth.schema'
-import envConfig from '@/config'
 import { toast } from 'sonner'
-import { useAppContext } from '@/app/AppProvider'
 import { useRouter } from 'next/navigation'
+import authApiRequest from '@/apiRequests/auth'
 
 const formSchema = LoginBody
 
@@ -23,52 +22,19 @@ export default function LoginForm() {
       password: ''
     }
   })
-  const { setSessionToken } = useAppContext()
   const router = useRouter()
 
   async function onSubmit(values: FormValues) {
     try {
-      const result = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(values)
-      })
+      const result = await authApiRequest.login(values)
 
-      const res = await result.json()
+      toast.success(result.payload.message)
 
-      const data = {
-        status: result.status,
-        payload: res
-      }
-
-      if (!result.ok) {
-        throw data
-      }
-
-      toast.success(res.message)
-
-      const resultFromNextServer = await fetch('/api/auth', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      })
-
-      const resFromNextServer = await resultFromNextServer.json()
-
-      setSessionToken(resFromNextServer.data?.token)
+      await authApiRequest.auth({ sessionToken: result.payload.data.token })
 
       // redirect to profile page
-      router.replace('/me')
-
-      // setSessionToken(resultFromNextServer.data?.token)
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      router.push('/me')
     } catch (error: any) {
-      console.log(error)
-
       const errors = error.payload?.errors as {
         field: string
         message: string

@@ -1,7 +1,16 @@
 'use client'
-// import { useAppContext } from '@/app/AppProvider'
+
+import accountApiRequest from '@/apiRequests/account'
+import { useEffect } from 'react'
 
 export default function Profile() {
-  //   const { sessionToken } = useAppContext()
+  useEffect(() => {
+    const fetchRequest = async () => {
+      const result = await accountApiRequest.meClient()
+      console.log('result client', result)
+    }
+
+    fetchRequest()
+  }, [])
   return <div>Profile</div>
 }

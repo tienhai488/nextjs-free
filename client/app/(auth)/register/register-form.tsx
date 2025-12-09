@@ -7,7 +7,9 @@ import { Button } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { RegisterBody, RegisterBodyType } from '@/schemaValidations/auth.schema'
-import envConfig from '@/config'
+import authApiRequest from '@/apiRequests/auth'
+import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 const formSchema = RegisterBody
 
@@ -23,18 +25,34 @@ export default function RegisterForm() {
       confirmPassword: ''
     }
   })
+  const router = useRouter()
 
   async function onSubmit(values: FormValues) {
-    const result = await fetch(`${envConfig.NEXT_PUBLIC_API_ENDPOINT}/auth/register`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(values)
-    })
+    try {
+      const result = await authApiRequest.register(values)
 
-    const res = await result.json()
-    console.log(res)
+      toast.success(result.payload.message)
+
+      await authApiRequest.auth({ sessionToken: result.payload.data.token })
+
+      // redirect to profile page
+      router.push('/me')
+    } catch (error: any) {
+      const errors = error.payload?.errors as {
+        field: string
+        message: string
+      }[]
+
+      const status = error.status as number
+
+      if (status == 422) {
+        errors.forEach((err) => {
+          form.setError(err.field as keyof FormValues, { type: 'server', message: err.message })
+        })
+      } else {
+        toast.error(error.payload?.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau!')
+      }
+    }
   }
 
   return (
