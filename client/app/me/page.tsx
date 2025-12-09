@@ -6,8 +6,6 @@ export default async function MePage() {
   const cookieStore = await cookies()
   const sessionToken = cookieStore.get('sessionToken')?.value || ''
 
-  console.log(sessionToken)
-
   const result = await accountApiRequest.me(sessionToken)
 
   return (

@@ -10,12 +10,15 @@ import { RegisterBody, RegisterBodyType } from '@/schemaValidations/auth.schema'
 import authApiRequest from '@/apiRequests/auth'
 import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+import { handleErrorApi } from '@/lib/utils'
 
 const formSchema = RegisterBody
 
 type FormValues = RegisterBodyType
 
 export default function RegisterForm() {
+  const [loading, setLoading] = useState(false)
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -28,6 +31,9 @@ export default function RegisterForm() {
   const router = useRouter()
 
   async function onSubmit(values: FormValues) {
+    if (loading) return
+
+    setLoading(true)
     try {
       const result = await authApiRequest.register(values)
 
@@ -38,20 +44,9 @@ export default function RegisterForm() {
       // redirect to profile page
       router.push('/me')
     } catch (error: any) {
-      const errors = error.payload?.errors as {
-        field: string
-        message: string
-      }[]
-
-      const status = error.status as number
-
-      if (status == 422) {
-        errors.forEach((err) => {
-          form.setError(err.field as keyof FormValues, { type: 'server', message: err.message })
-        })
-      } else {
-        toast.error(error.payload?.message || 'Đã có lỗi xảy ra, vui lòng thử lại sau!')
-      }
+      handleErrorApi({ error, setError: form.setError })
+    } finally {
+      setLoading(false)
     }
   }
 
