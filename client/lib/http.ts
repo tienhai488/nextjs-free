@@ -1,11 +1,13 @@
 import envConfig from '@/config'
 import { LoginResType } from '@/schemaValidations/auth.schema'
+import { redirect } from 'next/navigation'
 
 type CustomOptions = Omit<RequestInit, 'method'> & {
   baseUrl?: string | undefined
 }
 
 const ENTITY_ERROR_STATUS = 422
+const AUTHENTICATION_ERROR_STATUS = 401
 
 type EntityErrorPayload = {
   message: string
@@ -48,14 +50,15 @@ class SessionToken {
   }
 
   set value(token: string) {
-    // if (typeof window === 'undefined') {
-    //     throw new Error('Cannot set token on server side')
-    // }
-    this.token = token
+    if (typeof window !== 'undefined') {
+      this.token = token
+    }
+    // throw new Error('Cannot set token on server side')
   }
 }
 
 export const clientSessionToken = new SessionToken()
+const clientLogoutRequest: { value: null | Promise<any> } = { value: null }
 
 const request = async <Response>(
   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
@@ -67,8 +70,6 @@ const request = async <Response>(
     'Content-Type': 'application/json',
     ...(clientSessionToken.value ? { Authorization: `Bearer ${clientSessionToken.value}` } : {})
   }
-
-  console.log('options', options)
 
   const baseUrl = options?.baseUrl !== undefined && options.baseUrl === '' ? '' : envConfig.NEXT_PUBLIC_API_ENDPOINT
   const trimmedUrl = url.startsWith('/') ? url.slice(1) : url
@@ -89,7 +90,42 @@ const request = async <Response>(
   }
 
   if (!response.ok) {
-    throw new HttpError(data)
+    switch (response.status) {
+      case ENTITY_ERROR_STATUS:
+        throw new EntityError(
+          data as {
+            status: number
+            payload: EntityErrorPayload
+          }
+        )
+        break
+
+      case AUTHENTICATION_ERROR_STATUS:
+        if (typeof window === 'undefined') {
+          const sessionToken = (options?.headers as any)?.Authorization?.split(' ')[1] || ''
+          redirect(`/logout?sessionToken=${sessionToken}`)
+        } else {
+          if (!clientLogoutRequest.value) {
+            clientLogoutRequest.value = fetch('/api/auth/logout', {
+              method: 'POST',
+              body: JSON.stringify({ force: true }),
+              headers: {
+                ...baseHeaders
+              }
+            })
+
+            await clientLogoutRequest.value
+            clientSessionToken.value = ''
+            clientLogoutRequest.value = null
+            location.href = '/login'
+          }
+        }
+        break
+
+      default:
+        throw new HttpError(data)
+        break
+    }
   }
 
   if (typeof window !== 'undefined') {

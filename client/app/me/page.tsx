@@ -1,5 +1,4 @@
 import accountApiRequest from '@/apiRequests/account'
-import Profile from '@/app/me/profile'
 import { cookies } from 'next/headers'
 
 export default async function MePage() {
@@ -12,7 +11,7 @@ export default async function MePage() {
     <div>
       <h1>Profile</h1>
       <div>Hi, {result.payload.data.name}</div>
-      <Profile />
+      {/* <Profile /> */}
     </div>
   )
 }

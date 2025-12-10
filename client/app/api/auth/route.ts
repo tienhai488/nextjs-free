@@ -1,19 +1,28 @@
+import { decodeJWT } from '@/lib/utils'
+
+type PayloadJWT = {
+  userId: number
+  tokenType: string
+  iat: number
+  exp: number
+}
+
 export async function POST(request: Request) {
-    const res = await request.json();
+  const res = await request.json()
 
-    const sessionToken = res.sessionToken;
+  const sessionToken = res.sessionToken
 
-    if (!sessionToken) {
-        return Response.json(
-            { message: 'Session token not found' },
-            { status: 400 }
-        )
+  if (!sessionToken) {
+    return Response.json({ message: 'Session token not found' }, { status: 401 })
+  }
+
+  const payload: PayloadJWT = decodeJWT<PayloadJWT>(sessionToken)
+  const expiresDate = new Date(payload.exp * 1000).toUTCString()
+
+  return Response.json(res, {
+    status: 200,
+    headers: {
+      'Set-Cookie': `sessionToken=${sessionToken}; HttpOnly; Path=/; Expires=${expiresDate}`
     }
-
-    return Response.json(res, {
-        status: 200,
-        headers: {
-            'Set-Cookie': `sessionToken=${sessionToken}; HttpOnly; Path=/`
-        }
-    })
+  })
 }
