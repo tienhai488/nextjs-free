@@ -1,15 +1,19 @@
+import ButtonLogout from '@/components/button-logout'
 import { ModeToggle } from '@/components/toggle-theme'
 import Link from 'next/link'
 
-export default function Header() {
+export default async function Header() {
   return (
     <div>
       <ul>
         <li>
-          <Link href='/login'>Đăng nhập</Link>
+          <Link href='/login'>Login</Link>
         </li>
         <li>
-          <Link href='/register'>Đăng ký</Link>
+          <Link href='/register'>Register</Link>
+        </li>
+        <li>
+          <ButtonLogout />
         </li>
       </ul>
       <ModeToggle />
