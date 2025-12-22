@@ -36,7 +36,7 @@ export default function LoginForm() {
 
       toast.success(result.payload.message)
 
-      await authApiRequest.auth({ sessionToken: result.payload.data.token })
+      await authApiRequest.auth({ sessionToken: result.payload.data.token, expiresAt: result.payload.data.expiresAt })
 
       // redirect to profile page
       router.push('/me')
