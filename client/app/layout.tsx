@@ -4,9 +4,9 @@ import { ThemeProvider } from '@/components/theme-provider'
 import './globals.css'
 import Header from '@/components/header'
 import { Toaster } from 'sonner'
-import { AppProvider } from '@/app/AppProvider'
 import { cookies } from 'next/headers'
 import SlideSession from '@/components/slide-session'
+import { AppProvider } from '@/app/app-provider'
 
 const inter = Inter({ subsets: ['vietnamese'] })
 

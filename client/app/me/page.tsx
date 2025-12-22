@@ -1,4 +1,5 @@
 import accountApiRequest from '@/apiRequests/account'
+import ProfileForm from '@/app/me/profile-form'
 import { cookies } from 'next/headers'
 
 export default async function MePage() {
@@ -11,7 +12,7 @@ export default async function MePage() {
     <div>
       <h1>Profile</h1>
       <div>Hi, {result.payload.data.name}</div>
-      {/* <Profile /> */}
+      <ProfileForm profile={result.payload.data} />
     </div>
   )
 }

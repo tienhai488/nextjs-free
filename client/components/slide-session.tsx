@@ -28,5 +28,9 @@ export default function SlideSession() {
     clientSessionToken.value = (res.payload as any).payload.data.token
     clientSessionToken.expiresAt = (res.payload as any).payload.data.expiresAt
   }
-  return <Button onClick={slideSession}>Slide session</Button>
+  return (
+    <Button hidden onClick={slideSession}>
+      Slide session
+    </Button>
+  )
 }
