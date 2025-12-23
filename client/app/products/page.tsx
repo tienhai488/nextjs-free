@@ -1,6 +1,7 @@
 import productApiRequest from '@/apiRequests/product'
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export default async function ProductsPage() {
   const { payload } = await productApiRequest.getList()
@@ -17,8 +18,14 @@ export default async function ProductsPage() {
             <h3>{product.name}</h3>
             <div>{product.price}</div>
             <div className='flex space-x-2'>
-              <Button>Edit</Button>
-              <Button>Delete</Button>
+              <Link href={`/products/${product.id}/edit`}>
+                <Button variant={'outline'} className='cursor-pointer'>
+                  Edit
+                </Button>
+              </Link>
+              <Button variant={'destructive'} className='cursor-pointer'>
+                Delete
+              </Button>
             </div>
           </div>
         ))}
