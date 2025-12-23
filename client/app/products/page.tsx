@@ -1,9 +1,14 @@
 import productApiRequest from '@/apiRequests/product'
 import { DeleteButton } from '@/app/products/_components/delete-button'
 import { Button } from '@/components/ui/button'
+import { Metadata } from 'next'
 import { cookies } from 'next/headers'
 import Image from 'next/image'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Products'
+}
 
 export default async function ProductsPage() {
   const cookieStore = await cookies()
