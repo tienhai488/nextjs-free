@@ -7,6 +7,9 @@ export default async function Header() {
     <div>
       <ul>
         <li>
+          <Link href='/products'>Product List</Link>
+        </li>
+        <li>
           <Link href='/products/create'>Create Product</Link>
         </li>
         <li>
