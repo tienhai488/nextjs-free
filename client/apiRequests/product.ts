@@ -1,6 +1,6 @@
 import http from '@/lib/http'
+import { MessageResType } from '@/schemaValidations/common.schema'
 import { CreateProductBodyType, ProductListResType, ProductResType } from '@/schemaValidations/product.schema'
-import { id } from 'zod/locales'
 
 const productApiRequest = {
   getList: () => http.get<ProductListResType>('/products'),
@@ -11,7 +11,8 @@ const productApiRequest = {
     http.post<{
       message: string
       data: string
-    }>('/media/upload', body)
+    }>('/media/upload', body),
+  delete: (id: string) => http.delete<MessageResType>(`/products/${id}`)
 }
 
 export default productApiRequest

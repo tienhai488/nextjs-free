@@ -1,4 +1,4 @@
-import ProductCreateForm from '@/app/products/create/product-create-form'
+import ProductCreateForm from '@/app/products/_components/product-create-form'
 
 export default function ProductCreatePage() {
   return (

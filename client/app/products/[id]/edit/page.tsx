@@ -1,5 +1,5 @@
 import productApiRequest from '@/apiRequests/product'
-import ProductEditForm from '@/app/products/[id]/edit/product-edit-form'
+import ProductEditForm from '@/app/products/_components/product-edit-form'
 
 export default async function ProductEditPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
