@@ -1,4 +1,5 @@
 import productApiRequest from '@/apiRequests/product'
+import ProductEditForm from '@/app/products/[id]/edit/product-edit-form'
 
 export default async function ProductEditPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -14,5 +15,9 @@ export default async function ProductEditPage({ params }: { params: Promise<{ id
     return <div>Product not found</div>
   }
 
-  return <div>Product Name: {product.name}</div>
+  return (
+    <div>
+      <ProductEditForm product={product} />
+    </div>
+  )
 }
