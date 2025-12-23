@@ -1,10 +1,13 @@
 import productApiRequest from '@/apiRequests/product'
 import { DeleteButton } from '@/app/products/_components/delete-button'
 import { Button } from '@/components/ui/button'
+import { cookies } from 'next/headers'
 import Image from 'next/image'
 import Link from 'next/link'
 
 export default async function ProductsPage() {
+  const cookieStore = await cookies()
+  const sessionToken = cookieStore.get('sessionToken')?.value || ''
   const { payload } = await productApiRequest.getList()
 
   const productList = payload.data
@@ -15,17 +18,27 @@ export default async function ProductsPage() {
       <div className='space-y-5'>
         {productList.map((product) => (
           <div className='flex space-x-2' key={product.id}>
-            <Image src={product.image} width={180} height={180} alt={product.name} className='w-36 h-36 object-cover' />
+            <Link href={`/products/${product.id}`}>
+              <Image
+                src={product.image}
+                width={180}
+                height={180}
+                alt={product.name}
+                className='w-36 h-36 object-cover'
+              />
+            </Link>
             <h3>{product.name}</h3>
             <div>{product.price}</div>
-            <div className='flex space-x-2'>
-              <Link href={`/products/${product.id}/edit`}>
-                <Button variant={'outline'} className='cursor-pointer'>
-                  Edit
-                </Button>
-              </Link>
-              <DeleteButton product={product} />
-            </div>
+            {sessionToken && (
+              <div className='flex space-x-2'>
+                <Link href={`/products/${product.id}/edit`}>
+                  <Button variant={'outline'} className='cursor-pointer'>
+                    Edit
+                  </Button>
+                </Link>
+                <DeleteButton product={product} />
+              </div>
+            )}
           </div>
         ))}
       </div>

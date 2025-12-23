@@ -7,6 +7,8 @@ import { Toaster } from 'sonner'
 import { cookies } from 'next/headers'
 import SlideSession from '@/components/slide-session'
 import { AppProvider } from '@/app/app-provider'
+import { AccountResType } from '@/schemaValidations/account.schema'
+import accountApiRequest from '@/apiRequests/account'
 
 const inter = Inter({ subsets: ['vietnamese'] })
 
@@ -22,6 +24,16 @@ export default async function RootLayout({
 }>) {
   const cookieStore = await cookies()
   const sessionToken = cookieStore.get('sessionToken')?.value || ''
+  let user: AccountResType['data'] | null = null
+
+  if (sessionToken) {
+    try {
+      const data = await accountApiRequest.me(sessionToken)
+      user = data.payload.data
+    } catch (error) {
+      //
+    }
+  }
 
   return (
     <>
@@ -29,8 +41,8 @@ export default async function RootLayout({
         <head />
         <body className={`${inter.className}`}>
           <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
-            <Header />
-            <AppProvider initialSessionToken={sessionToken}>
+            <AppProvider initialSessionToken={sessionToken} user={user}>
+              <Header user={user} />
               {children}
               <SlideSession />
             </AppProvider>

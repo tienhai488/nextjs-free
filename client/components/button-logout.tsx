@@ -14,6 +14,7 @@ export default function ButtonLogout() {
       await authApiRequest.logoutFromNextClientToNextServer()
 
       router.push('/login')
+      router.refresh()
     } catch (error) {
       handleErrorApi({ error })
       authApiRequest.logoutFromNextClientToNextServer(true).then(() => {

@@ -42,7 +42,8 @@ export default function RegisterForm() {
       await authApiRequest.auth({ sessionToken: result.payload.data.token, expiresAt: result.payload.data.expiresAt })
 
       // redirect to profile page
-      router.push('/me')
+      router.push('/')
+      router.refresh()
     } catch (error: any) {
       handleErrorApi({ error, setError: form.setError })
     } finally {
