@@ -77,11 +77,20 @@ const request = async <Response>(
   url: string,
   options: CustomOptions | undefined
 ) => {
-  const body = options?.body ? JSON.stringify(options.body) : undefined
-  const baseHeaders = {
-    'Content-Type': 'application/json',
-    ...(clientSessionToken.value ? { Authorization: `Bearer ${clientSessionToken.value}` } : {})
-  }
+  const body = options?.body
+    ? options.body instanceof FormData
+      ? options.body
+      : JSON.stringify(options.body)
+    : undefined
+  const baseHeaders =
+    options?.body instanceof FormData
+      ? {
+          ...(clientSessionToken.value ? { Authorization: `Bearer ${clientSessionToken.value}` } : {})
+        }
+      : {
+          'Content-Type': 'application/json',
+          ...(clientSessionToken.value ? { Authorization: `Bearer ${clientSessionToken.value}` } : {})
+        }
 
   const baseUrl = options?.baseUrl !== undefined && options.baseUrl === '' ? '' : envConfig.NEXT_PUBLIC_API_ENDPOINT
   const trimmedUrl = url.startsWith('/') ? url.slice(1) : url
